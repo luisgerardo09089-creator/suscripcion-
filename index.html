@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suscríbete</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1A1A2E;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background: #16213E;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4C9AFF;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #0F3460;
+            border-radius: 8px;
+            background: #0F3460;
+            color: white;
+            box-sizing: border-box;
+        }
+        input[type="email"]:focus {
+            outline: none;
+            border-color: #4C9AFF;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #4C9AFF;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #4C9AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+        .error {
+            color: #FF4C4C;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        .success {
+            color: #4CFF9A;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+        }
+        a {
+            color: #4C9AFF;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Suscríbete al Newsletter</h2>
+        <form id="subscriptionForm" novalidate>
+            <div class="form-group">
+                <label for="email">Correo electrónico:</label>
+                <input type="email" id="email" name="email" placeholder="tu@correo.com" required>
+                <div class="error" id="emailError">Ingresa un correo válido. Ej: nombre@dominio.com</div>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="terms" name="terms" required>
+                <label for="terms">Acepto los <a href="#" target="_blank">términos y condiciones</a></label>
+            </div>
+            <div class="error" id="termsError">Debes aceptar los términos y condiciones</div>
+
+            <button type="submit" id="submitBtn">Suscribirme</button>
+            <div class="success" id="successMsg">¡Gracias por suscribirte! Revisa tu correo.</div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('subscriptionForm');
+        const email = document.getElementById('email');
+        const terms = document.getElementById('terms');
+        const emailError = document.getElementById('emailError');
+        const termsError = document.getElementById('termsError');
+        const successMsg = document.getElementById('successMsg');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Regex para validar email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        function validateEmail() {
+            if (!emailRegex.test(email.value)) {
+                emailError.style.display = 'block';
+                return false;
+            } else {
+                emailError.style.display = 'none';
+                return true;
+            }
+        }
+
+        function validateTerms() {
+            if (!terms.checked) {
+                termsError.style.display = 'block';
+                return false;
+            } else {
+                termsError.style.display = 'none';
+                return true;
+            }
+        }
+
+        // Validación en tiempo real
+        email.addEventListener('input', validateEmail);
+        terms.addEventListener('change', validateTerms);
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const isEmailValid = validateEmail();
+            const areTermsValid = validateTerms();
+
+            if (isEmailValid && areTermsValid) {
+                // Aquí conectarías con tu backend, Formspree, Netlify Forms, etc.
+                // Por ahora solo mostramos éxito
+                successMsg.style.display = 'block';
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Enviado ✓';
+                
+                // Opcional: enviar datos a Formspree
+                // fetch('https://formspree.io/f/TU_ID', {
+                //     method: 'POST',
+                //     body: new FormData(form),
+                //     headers: { 'Accept': 'application/json' }
+                // });
+
+                setTimeout(() => {
+                    form.reset();
+                    successMsg.style.display = 'none';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Suscribirme';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
