@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #1A1A2E;
+            background: #0D0A1F;
             color: white;
             display: flex;
             justify-content: center;
@@ -16,17 +16,18 @@
             margin: 0;
         }
         .form-container {
-            background: #16213E;
+            background: #1E1B3A;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(157, 78, 221, 0.3);
             width: 100%;
             max-width: 400px;
+            border: 1px solid #9D4EDD;
         }
         h2 {
             text-align: center;
             margin-bottom: 20px;
-            color: #4C9AFF;
+            color: #C77DFF;
         }
         .form-group {
             margin-bottom: 15px;
@@ -35,19 +36,29 @@
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
+            color: #E0AAFF;
         }
         input[type="email"] {
             width: 100%;
             padding: 12px;
-            border: 2px solid #0F3460;
-            border-radius: 8px;
-            background: #0F3460;
+            border: 2px solid #3C096C;
+            border-radius: 10px;
+            background: #240046;
             color: white;
             box-sizing: border-box;
+            transition: all 0.3s;
         }
         input[type="email"]:focus {
             outline: none;
-            border-color: #4C9AFF;
+            border-color: #C77DFF;
+            box-shadow: 0 0 0 3px rgba(199, 125, 255, 0.3);
+        }
+        input[type="email"].invalid {
+            border-color: #FF6D00;
+            background: #3D1F00;
+        }
+        input[type="email"].valid {
+            border-color: #80FF00;
         }
         .checkbox-group {
             display: flex;
@@ -58,37 +69,48 @@
         input[type="checkbox"] {
             width: 18px;
             height: 18px;
-            accent-color: #4C9AFF;
+            accent-color: #9D4EDD;
         }
         button {
             width: 100%;
             padding: 12px;
-            background: #4C9AFF;
+            background: #9D4EDD;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #7B2CBF;
+            transform: translateY(-2px);
         }
         button:disabled {
             background: #555;
             cursor: not-allowed;
+            transform: none;
         }
         .error {
-            color: #FF4C4C;
+            color: #FF6D00;
             font-size: 14px;
             margin-top: 5px;
             display: none;
         }
         .success {
-            color: #4CFF9A;
+            color: #80FF00;
             text-align: center;
             margin-top: 15px;
             display: none;
+            font-weight: bold;
         }
         a {
-            color: #4C9AFF;
+            color: #C77DFF;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -98,8 +120,8 @@
         <form id="subscriptionForm" novalidate>
             <div class="form-group">
                 <label for="email">Correo electrónico:</label>
-                <input type="email" id="email" name="email" placeholder="ingresa tu correo " required>
-                <div class="error" id="emailError">Ingresa un correo válido. </div>
+                <input type="email" id="email" name="email" placeholder="tu@correo.com" required>
+                <div class="error" id="emailError">Ingresa un correo válido. Ej: nombre@dominio.com</div>
             </div>
 
             <div class="checkbox-group">
@@ -109,7 +131,7 @@
             <div class="error" id="termsError">Debes aceptar los términos y condiciones</div>
 
             <button type="submit" id="submitBtn">Suscribirme</button>
-            <div class="success" id="successMsg">¡Gracias por suscribirte! Revisa tu correo.</div>
+            <div class="success" id="successMsg">¡Listo! Ya estás suscrito 🎉</div>
         </form>
     </div>
 
@@ -122,15 +144,22 @@
         const successMsg = document.getElementById('successMsg');
         const submitBtn = document.getElementById('submitBtn');
 
-        // Regex para validar email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         function validateEmail() {
-            if (!emailRegex.test(email.value)) {
+            if (email.value === '') {
+                email.classList.remove('invalid', 'valid');
+                emailError.style.display = 'none';
+                return false;
+            } else if (!emailRegex.test(email.value)) {
                 emailError.style.display = 'block';
+                email.classList.add('invalid');
+                email.classList.remove('valid');
                 return false;
             } else {
                 emailError.style.display = 'none';
+                email.classList.add('valid');
+                email.classList.remove('invalid');
                 return true;
             }
         }
@@ -145,7 +174,6 @@
             }
         }
 
-        // Validación en tiempo real
         email.addEventListener('input', validateEmail);
         terms.addEventListener('change', validateTerms);
 
@@ -156,24 +184,20 @@
             const areTermsValid = validateTerms();
 
             if (isEmailValid && areTermsValid) {
-                // Aquí conectarías con tu backend, Formspree, Netlify Forms, etc.
-                // Por ahora solo mostramos éxito
                 successMsg.style.display = 'block';
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Enviado ✓';
-                
-                // Opcional: enviar datos a Formspree
-                // fetch('https://formspree.io/f/TU_ID', {
-                //     method: 'POST',
-                //     body: new FormData(form),
-                //     headers: { 'Accept': 'application/json' }
-                // });
+                submitBtn.style.background = '#80FF00';
+                submitBtn.style.color = '#0D0A1F';
 
                 setTimeout(() => {
                     form.reset();
+                    email.classList.remove('valid', 'invalid');
                     successMsg.style.display = 'none';
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Suscribirme';
+                    submitBtn.style.background = '#9D4EDD';
+                    submitBtn.style.color = 'white';
                 }, 3000);
             }
         });
